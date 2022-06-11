@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { LAYERS } from '../config';
+import {LAYERS} from '../config';
 
 class Button extends THREE.Mesh {
     static depth = 1;
@@ -8,12 +8,28 @@ class Button extends THREE.Mesh {
     static offset = 1;
 
     static geo = new THREE.BoxGeometry(Button.height, Button.height, Button.depth);
-    static mat = new THREE.MeshDepthMaterial();
+    static mat = new THREE.MeshBasicMaterial({color: 0x3a3a3a});
 
     constructor() {
         super(Button.geo, Button.mat);
         this.position.z = Button.offset + Button.depth;
-        this.layers.enable(LAYERS.RAYCASTABLE)
+        this.layers.enable(LAYERS.RAYCASTABLE);
+
+        this.addEventListener('select', (e) => {
+            console.log({...e});
+
+            const color = new THREE.Color(0xffffff);
+            color.setHex(Math.random() * 0xffffff);
+            this.material.color = color;
+        });
+        this.addEventListener('pointerenter', (e) => {
+            console.log({...e});
+            this.material.wireframe = true;
+        });
+        this.addEventListener('pointerleave', (e) => {
+            console.log({...e});
+            this.material.wireframe = false;
+        });
     }
 }
 
@@ -23,8 +39,8 @@ export class Dock extends THREE.Group {
     static offsetY = -0.5;
 
     // In localscale - 1 == 1cm
-    static depth = 2.5;
-    static padding = 1.5;
+    static depth = 0.5;
+    static padding = 1.2;
     static gap = 1.5;
     static rotX = -20 * (Math.PI / 180);
 
@@ -36,7 +52,7 @@ export class Dock extends THREE.Group {
 
         // Instantiate mesh
         this.geo = new THREE.BoxGeometry();
-        this.mat = new THREE.MeshNormalMaterial();
+        this.mat = new THREE.MeshBasicMaterial({color: 0x959595});
         this.mesh = new THREE.Mesh(this.geo, this.mat);
 
         this.add(this.mesh);
@@ -45,10 +61,10 @@ export class Dock extends THREE.Group {
         this.calcDimensions();
 
         this.addButton('test1');
-        this.addButton('test1');
-        this.addButton('test1');
-        this.addButton('test1');
-        this.addButton('test1');
+        this.addButton('test2');
+        this.addButton('test3');
+        this.addButton('test4');
+        this.addButton('test5');
     }
 
     calcDimensions() {
@@ -75,9 +91,9 @@ export class Dock extends THREE.Group {
         let button = new Button();
         button.name = name;
 
-        const color = new THREE.Color(0xffffff);
-        color.setHex(Math.random() * 0xffffff);
-        button.material = new THREE.MeshBasicMaterial({color});
+        // const color = new THREE.Color(0xffffff);
+        // color.setHex(Math.random() * 0xffffff);
+        // button.material = new THREE.MeshBasicMaterial({color});
 
         this.buttons.splice(i, 0, button);
         this.add(button);
