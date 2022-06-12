@@ -59,13 +59,13 @@ export class Pointer {
         this.hoverIntersectionsBuffer.forEach((intersect) => {
             const match = newIntersections.find(item=>item.object.uuid === intersect.object.uuid);
             if(!match)
-                intersect.object.dispatchEvent({type: 'pointerleave', target: intersect.object});
+                intersect.object.dispatchEvent({type: 'pointerleave', target: intersect.object, dispatcher: this});
         });
 
         newIntersections.forEach((intersect) => {
             const match = this.hoverIntersectionsBuffer.find(item=>item.object.uuid === intersect.object.uuid);
             if(!match)
-                intersect.object.dispatchEvent({type: 'pointerenter', target: intersect.object});
+                intersect.object.dispatchEvent({type: 'pointerenter', target: intersect.object, dispatcher: this});
         });
 
         this.hoverIntersectionsBuffer = newIntersections;

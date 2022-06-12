@@ -32,10 +32,10 @@ export function setup() {
     controls.update();
 
     // Camera
-    camera.position.z = 0;
-    camera.position.y = 1.8;
+    camera.position.z = 1;
+    camera.position.y = 0.5;
     scene.add(camera);
-    worldCamera.position.y = 5;
+    worldCamera.position.y = 2;
     worldCamera.lookAt(0, 0, 0);
 
     // Renderer
@@ -43,7 +43,9 @@ export function setup() {
     renderer.setSize(sizes.width, sizes.height);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.xr.enabled = true;
+    renderer.shadowMap.enabled = true;
     document.body.appendChild(VRButton.createButton(renderer));
+    console.log(renderer)
 
     renderer.xr.addEventListener("sessionstart", (e)=>{
         xrSetup();
