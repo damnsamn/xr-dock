@@ -3,8 +3,9 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {VRButton} from 'three/examples/jsm/webxr/VRButton.js';
 import * as THREE from 'three';
 import {sizes} from './config';
-
 export const gui = new GUI();
+
+export const manager = new THREE.LoadingManager();
 
 export const canvas = document.querySelector('canvas.webgl');
 

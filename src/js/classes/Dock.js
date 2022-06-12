@@ -1,17 +1,29 @@
 import * as THREE from 'three';
 import {LAYERS} from '../config';
 
+import {SVGLoader} from 'three/examples/jsm/loaders/SVGLoader';
+import { manager } from '../setup';
+
+const loader = new SVGLoader(manager);
+
+let buttonShape;
+loader.load('/dock-button.svg', (data) => {
+    const shapes = SVGLoader.createShapes(data.paths[0])
+    buttonShape = shapes[0]
+});
+
 class Button extends THREE.Mesh {
     static depth = 1;
     static height = 7;
     static width = Button.height;
     static offset = 1;
 
-    static geo = new THREE.BoxGeometry(Button.height, Button.height, Button.depth);
-    static mat = new THREE.MeshBasicMaterial({color: 0x3a3a3a});
 
     constructor() {
-        super(Button.geo, Button.mat);
+        const geo = new THREE.ShapeGeometry(buttonShape).scale(0.1,0.1,0.1).translate(-Button.height/2, -Button.width/2, 0)
+        const mat = new THREE.MeshBasicMaterial({color: 0x3a3a3a});
+
+        super(geo, mat);
         this.position.z = Button.offset + Button.depth;
         this.layers.enable(LAYERS.RAYCASTABLE);
 
