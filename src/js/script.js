@@ -4,11 +4,25 @@ import {LineBasicMaterial} from 'three';
 import {Pointer} from './classes/Pointer';
 import {Dock} from './classes/Dock';
 import {canvas, manager, scene, uiSpace, camera, worldCamera, setup, renderer, xrSetup} from './setup';
-import {headTracking, LAYERS, sizes} from './config';
+import {headTracking, LAYERS, setHeadTracking, sizes} from './config';
 import {AmbientLight} from 'three';
+import gsap from 'gsap';
 
-manager.onLoad = () => {
+// manager.onLoad = () => {
     const dock = new Dock();
+
+
+    dock.addButton('test1', {
+        color: 0xf5f5f5,
+        icon: headTracking ? '/icons/locked.svg' : '/icons/unlocked.svg',
+    }).addEventListener('select', (e) => {
+        setHeadTracking(!headTracking);
+        e.target.setIcon(headTracking ? '/icons/locked.svg' : '/icons/unlocked.svg');
+    });
+    dock.addButton('triangle', {color: 0x75ff5f, icon:"/icons/triangle.svg"});
+    dock.addButton('circle', {color: 0xff5f5f, icon:"/icons/circle.svg"});
+    dock.addButton('cross', {color: 0x5f82ff, icon:"/icons/cross.svg"});
+    dock.addButton('square', {color: 0xFF9549, icon:"/icons/square.svg"});
     uiSpace.add(dock);
 
     const uiLight = new THREE.DirectionalLight(0xffffff, 0.5);
@@ -71,6 +85,8 @@ manager.onLoad = () => {
     setup();
 
     function render() {
+        gsap.ticker.tick();
+
         if(headTracking)
         updateDockPos();
 
@@ -104,4 +120,4 @@ manager.onLoad = () => {
     renderer.setAnimationLoop(function () {
         render();
     });
-};
+// };

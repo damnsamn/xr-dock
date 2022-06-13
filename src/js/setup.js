@@ -3,6 +3,9 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {VRButton} from 'three/examples/jsm/webxr/VRButton.js';
 import * as THREE from 'three';
 import {sizes} from './config';
+
+THREE.Cache.enabled = true;
+
 export const gui = new GUI();
 
 export const manager = new THREE.LoadingManager();
@@ -17,7 +20,6 @@ const controls = new OrbitControls(camera, canvas);
 // Scene
 export const scene = new THREE.Scene();
 export const uiSpace = new THREE.Group();
-uiSpace.renderOrder = 999;
 
 //
 export const renderer = new THREE.WebGLRenderer({
@@ -45,11 +47,11 @@ export function setup() {
     renderer.xr.enabled = true;
     renderer.shadowMap.enabled = true;
     document.body.appendChild(VRButton.createButton(renderer));
-    console.log(renderer)
+    console.log(renderer);
 
-    renderer.xr.addEventListener("sessionstart", (e)=>{
+    renderer.xr.addEventListener('sessionstart', (e) => {
         xrSetup();
-    })
+    });
 }
 
 export function xrSetup() {

@@ -33,6 +33,7 @@ export class Pointer {
         if (activePointer) activePointer.laser.visible = false;
         activePointer = this;
         this.laser.visible = true;
+
         this.group.addEventListener('select', (e) => {
             if (this !== activePointer) {
                 activePointer.laser.visible = false;
@@ -42,10 +43,23 @@ export class Pointer {
             }
             this.handleSelect(e);
         });
+
+        this.group.addEventListener('selectstart', (e) => {
+            if (this !== activePointer) {
+                return;
+            }
+            this.laser.material.color = new THREE.Color(0xff0000);
+        });
+
+        this.group.addEventListener('selectend', (e) => {
+            if (this !== activePointer) {
+                return;
+            }
+            this.laser.material.color = new THREE.Color(0x00ff00);
+        });
     }
 
     handleSelect(e) {
-
         const intersections = this.getRayIntersections();
 
         intersections.forEach((intersect) => {
@@ -57,19 +71,18 @@ export class Pointer {
         const newIntersections = this.getRayIntersections();
 
         this.hoverIntersectionsBuffer.forEach((intersect) => {
-            const match = newIntersections.find(item=>item.object.uuid === intersect.object.uuid);
-            if(!match)
+            const match = newIntersections.find((item) => item.object.uuid === intersect.object.uuid);
+            if (!match)
                 intersect.object.dispatchEvent({type: 'pointerleave', target: intersect.object, dispatcher: this});
         });
 
         newIntersections.forEach((intersect) => {
-            const match = this.hoverIntersectionsBuffer.find(item=>item.object.uuid === intersect.object.uuid);
-            if(!match)
+            const match = this.hoverIntersectionsBuffer.find((item) => item.object.uuid === intersect.object.uuid);
+            if (!match)
                 intersect.object.dispatchEvent({type: 'pointerenter', target: intersect.object, dispatcher: this});
         });
 
         this.hoverIntersectionsBuffer = newIntersections;
-
     }
 
     getRayIntersections(objects = scene.children) {
@@ -80,7 +93,7 @@ export class Pointer {
     }
 
     updatePos() {
-        this.dispatchHoverEvents()
+        if (this === activePointer) this.dispatchHoverEvents();
         // this.rotationBuffer.push(this.group.rotation);
         // if (this.rotationBuffer.length > Pointer.rotationBufferLength) {
         //     this.rotationBuffer.shift();
