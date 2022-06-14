@@ -10,13 +10,14 @@ interface ButtonDefaultOptions {
     name: string;
     color?: number | THREE.Color;
     iconPath?: string;
-    onSelect?: THREE.EventListener<THREE.Event,string,any>;
-    onPointerEnter?: THREE.EventListener<THREE.Event,string,any>;
-    onPointerLeave?: THREE.EventListener<THREE.Event,string,any>;
+    onSelect?: THREE.EventListener<THREE.Event, string, any>;
+    onPointerEnter?: THREE.EventListener<THREE.Event, string, any>;
+    onPointerLeave?: THREE.EventListener<THREE.Event, string, any>;
 }
 
 export class Button extends THREE.Mesh {
     pointLight: THREE.PointLight;
+    shape: Squircle;
     icon?: THREE.Mesh;
 
     static depth = 0.25;
@@ -47,8 +48,8 @@ export class Button extends THREE.Mesh {
 
         super(geo, mat);
 
+        this.shape = shape;
         this.pointLight = new THREE.PointLight(options.color, 4, Button.width * 2 * 0.01, 2);
-        // this.pointLight.position.copy(this.position);
         this.add(this.pointLight);
 
         this.position.z = Button.offset + Button.depth / 2;
@@ -60,8 +61,17 @@ export class Button extends THREE.Mesh {
         }
 
         this.addEventListener('select', options.onSelect);
+
         this.addEventListener('pointerenter', (e) => {
-            console.log({ ...e });
+            gsap.to(this.shape, {
+                height: Button.height + 0.5,
+                width: Button.width + 0.5,
+                onUpdate: () => {
+                    this.shape.draw()
+                    this.geometry = new THREE.ExtrudeGeometry(shape, { depth: Button.depth, bevelEnabled: false }).center();
+                },
+                duration: 0.1,
+            });
             gsap.to(this.position, {
                 z: Button.offset + Button.depth + Button.hoverOffset,
                 duration: 0.1,
@@ -72,7 +82,15 @@ export class Button extends THREE.Mesh {
             });
         });
         this.addEventListener('pointerleave', (e) => {
-            console.log({ ...e });
+            gsap.to(this.shape, {
+                height: Button.height,
+                width: Button.width,
+                onUpdate: () => {
+                    this.shape.draw()
+                    this.geometry = new THREE.ExtrudeGeometry(shape, { depth: Button.depth, bevelEnabled: false }).center();
+                },
+                duration: 0.1,
+            });
             gsap.to(this.position, {
                 z: Button.offset + Button.depth,
                 duration: 0.1,
