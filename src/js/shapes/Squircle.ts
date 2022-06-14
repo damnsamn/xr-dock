@@ -1,9 +1,14 @@
 import * as THREE from 'three';
 
 export class Squircle extends THREE.Shape {
+    width: number;
+    height: number;
+    borderRadius: number;
+    handleFactor: number;
+
     static handleFactor = (4 / 3) * (Math.sqrt(2) - 1); // Approx. circle by default
 
-    constructor(width, height, borderRadius, handleFactor = Squircle.handleFactor) {
+    constructor(width: number, height: number, borderRadius: number, handleFactor = Squircle.handleFactor) {
         super();
         this.width = width;
         this.height = height;
@@ -14,8 +19,8 @@ export class Squircle extends THREE.Shape {
     }
 
     draw() {
-        const {width, height, handleFactor} = this;
-        let {borderRadius} = this;
+        const { width, height, handleFactor } = this;
+        let { borderRadius } = this;
 
         this.curves = [];
 
@@ -44,13 +49,13 @@ export class Squircle extends THREE.Shape {
             .bezierCurveTo(handleLengthInv, height, 0, height - handleLengthInv, 0, height - borderRadius);
     }
 
-    setWidth(width) {
+    setWidth(width: number) {
         this.width = width;
         this.draw();
         return this;
     }
 
-    setHeight(height) {
+    setHeight(height: number) {
         this.height = height;
         this.draw();
         return this;

@@ -1,82 +1,67 @@
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
-const path = require('path')
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path');
 
 module.exports = {
-    entry: path.resolve(__dirname, './src/js/script.js'),
-    output:
-    {
+    entry: path.resolve(__dirname, './src/js/index.ts'),
+    output: {
         hashFunction: 'xxhash64',
         filename: 'bundle.[contenthash].js',
-        path: path.resolve(__dirname, './dist')
+        path: path.resolve(__dirname, './dist'),
+    },
+    resolve: {
+        extensions: ['.tsx', '.ts', '.js'],
     },
     devtool: 'source-map',
-    plugins:
-    [
+    plugins: [
         new CopyWebpackPlugin({
-            patterns: [
-                { from: path.resolve(__dirname, './static') }
-            ]
+            patterns: [{from: path.resolve(__dirname, './static')}],
         }),
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, './src/index.html'),
-            minify: true
+            minify: true,
         }),
-        new MiniCSSExtractPlugin()
+        new MiniCSSExtractPlugin(),
     ],
-    module:
-    {
-        rules:
-        [
+    module: {
+        rules: [
             // HTML
             {
                 test: /\.(html)$/,
-                use:
-                [
-                    'html-loader'
-                ]
+                use: ['html-loader'],
             },
 
-            // JS
+            // TS
             {
-                test: /\.js$/,
+                test: /\.tsx?$/,
+                use: 'ts-loader',
                 exclude: /node_modules/,
-                use:
-                [
-                    'babel-loader'
-                ]
             },
 
             // CSS
             {
                 test: /\.css$/,
-                use:
-                [
-                    MiniCSSExtractPlugin.loader,
-                    'css-loader'
-                ]
+                use: [MiniCSSExtractPlugin.loader, 'css-loader'],
             },
 
             // Images
             {
                 test: /\.(jpg|png|gif|svg)$/,
                 type: 'asset/resource',
-                generator:
-                {
-                    filename: 'assets/images/[hash][ext]'
-                }
+                generator: {
+                    filename: 'assets/images/[hash][ext]',
+                },
             },
 
             // Fonts
             {
                 test: /\.(ttf|eot|woff|woff2)$/,
                 type: 'asset/resource',
-                generator:
-                {
-                    filename: 'assets/fonts/[hash][ext]'
-                }
-            }
-        ]
-    }
-}
+                generator: {
+                    filename: 'assets/fonts/[hash][ext]',
+                },
+            },
+        ],
+    },
+};

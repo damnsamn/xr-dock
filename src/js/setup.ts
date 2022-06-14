@@ -1,8 +1,8 @@
 import GUI from 'lil-gui';
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
-import {VRButton} from 'three/examples/jsm/webxr/VRButton.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 import * as THREE from 'three';
-import {sizes} from './config';
+import { setHeadTracking, sizes } from './config';
 
 THREE.Cache.enabled = true;
 
@@ -10,7 +10,7 @@ export const gui = new GUI();
 
 export const manager = new THREE.LoadingManager();
 
-export const canvas = document.querySelector('canvas.webgl');
+export const canvas: HTMLElement = document.querySelector('canvas.webgl');
 
 export const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
 export const worldCamera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
@@ -19,7 +19,8 @@ const controls = new OrbitControls(camera, canvas);
 
 // Scene
 export const scene = new THREE.Scene();
-export const uiSpace = new THREE.Group();
+export const uiScene = new THREE.Scene();
+export const headSpace = new THREE.Group();
 
 //
 export const renderer = new THREE.WebGLRenderer({
@@ -27,11 +28,13 @@ export const renderer = new THREE.WebGLRenderer({
     antialias: true,
 });
 
-export let xrSession;
+export let xrSession: XRSession;
 
 export function setup() {
-    scene.add(uiSpace);
+    uiScene.add(headSpace)
     controls.update();
+
+    setHeadTracking(false);
 
     // Camera
     camera.position.z = 1;
@@ -46,8 +49,8 @@ export function setup() {
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.xr.enabled = true;
     renderer.shadowMap.enabled = true;
+    renderer.autoClear = false;
     document.body.appendChild(VRButton.createButton(renderer));
-    console.log(renderer);
 
     renderer.xr.addEventListener('sessionstart', (e) => {
         xrSetup();
@@ -55,6 +58,7 @@ export function setup() {
 }
 
 export function xrSetup() {
+    setHeadTracking(true);
     xrSession = renderer.xr.getSession();
     console.log(xrSession);
     renderer.setPixelRatio(window.devicePixelRatio);
