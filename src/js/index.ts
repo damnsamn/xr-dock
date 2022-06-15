@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { LineBasicMaterial } from 'three';
 import { Pointer } from './classes/Pointer';
 import { Dock } from './classes/Dock';
-import { canvas, manager, scene, uiScene, camera, worldCamera, setup, renderer, xrSetup, headSpace } from './setup';
+import { canvas, manager, scene, uiScene, camera, worldCamera, setup, renderer, xrSetup, headSpace, pointers } from './setup';
 import { headTracking, LAYERS, setHeadTracking, sizes } from './config';
 import { AmbientLight } from 'three';
 import gsap from 'gsap';
@@ -75,9 +75,6 @@ scene.add(meterPlane);
 const axesHelper = new THREE.AxesHelper();
 scene.add(axesHelper);
 
-const controller1 = new Pointer(0, scene);
-const controller2 = new Pointer(1, scene);
-
 const light = new AmbientLight(new THREE.Color(0xffffff), 1);
 scene.add(light);
 const uiAmbientLight = new AmbientLight(new THREE.Color(0xffffff), 1);
@@ -99,6 +96,11 @@ function updateHeadSpace() {
     headSpace.quaternion.rotateTowards(camera.quaternion, deltaAngle / 10);
 }
 
+function updatePointers() {
+    pointers.forEach((p: Pointer) => p.update())
+}
+
+
 setup();
 
 function render() {
@@ -107,8 +109,8 @@ function render() {
     if (headTracking)
         updateHeadSpace();
 
-    controller1.updatePos();
-    controller2.updatePos();
+    updatePointers();
+
 
     if (renderer.xr.isPresenting) {
         renderer.clear()
@@ -117,7 +119,7 @@ function render() {
         renderer.render(uiScene, camera);
         return;
     }
-    scene.background = new THREE.Color(0x000000);
+    scene.background = new THREE.Color(0x0a0a0a);
     renderer.setViewport(0, 0, sizes.width, sizes.height);
     renderer.setScissor(0, 0, sizes.width, sizes.height);
     renderer.setScissorTest(true);

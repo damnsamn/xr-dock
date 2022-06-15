@@ -1,7 +1,8 @@
 import * as THREE from 'three';
+import { WebXRController } from 'three';
 import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
 import { LAYERS } from '../config';
-import { camera, renderer, scene, uiScene } from '../setup';
+import { camera, renderer, scene, uiScene, xrSession } from '../setup';
 
 let activePointer: Pointer = null;
 
@@ -11,6 +12,7 @@ raycaster.layers.set(LAYERS.RAYCASTABLE);
 
 export class Pointer {
     laser: THREE.Line;
+    inputSource: XRInputSource;
     raySpace: THREE.XRTargetRaySpace;
     gripSpace: THREE.XRGripSpace;
     hoverIntersectionsBuffer: THREE.Intersection[];
@@ -30,7 +32,13 @@ export class Pointer {
         this.raySpace.layers.set(LAYERS.CONTROLLER);
         this.gripSpace = renderer.xr.getControllerGrip(index);
         this.hoverIntersectionsBuffer = [];
-        console.log(this.raySpace)
+
+        this.raySpace.addEventListener("connected",(e)=>{
+            this.inputSource = e.data;
+        })
+
+        this.raySpace.matrixAutoUpdate = true;
+        this.gripSpace.matrixAutoUpdate = true;
 
         scene.add(this.gripSpace);
         uiScene.add(this.raySpace);
@@ -101,12 +109,13 @@ export class Pointer {
         return raycaster.intersectObjects(objects);
     }
 
-    updatePos() {
+    update() {
         if (this === activePointer) this.dispatchHoverEvents();
-        // this.rotationBuffer.push(this.raySpace.rotation);
-        // if (this.rotationBuffer.length > Pointer.rotationBufferLength) {
-        //     this.rotationBuffer.shift();
-        // }
-        this.raySpace.updateMatrix();
+    }
+
+    pulse(): void {
+        const haptic = this.inputSource.gamepad.hapticActuators[0];
+        // @ts-ignore
+        haptic.pulse(0.5, 5)
     }
 }

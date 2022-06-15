@@ -3,6 +3,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 import * as THREE from 'three';
 import { setHeadTracking, sizes } from './config';
+import { WebXRController } from 'three';
+import { Pointer } from './classes/Pointer';
 
 THREE.Cache.enabled = true;
 
@@ -22,13 +24,19 @@ export const scene = new THREE.Scene();
 export const uiScene = new THREE.Scene();
 export const headSpace = new THREE.Group();
 
-//
+
 export const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     antialias: true,
 });
 
 export let xrSession: XRSession;
+export let pointers: Pointer[] = [];
+
+function setupPointers() {
+    pointers.push(new Pointer(0, scene))
+    pointers.push(new Pointer(1, scene))
+}
 
 export function setup() {
     uiScene.add(headSpace)
@@ -58,8 +66,12 @@ export function setup() {
 }
 
 export function xrSetup() {
-    setHeadTracking(true);
     xrSession = renderer.xr.getSession();
-    console.log(xrSession);
+
+    setupPointers();
+
+
+    setHeadTracking(true);
+
     renderer.setPixelRatio(window.devicePixelRatio);
 }

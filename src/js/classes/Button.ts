@@ -3,6 +3,7 @@ import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader";
 import gsap from 'gsap';
 import { Squircle } from "../shapes/Squircle";
 import { LAYERS } from "../config";
+import { Pointer } from "./Pointer";
 
 const loaderSVG = new SVGLoader();
 
@@ -63,6 +64,9 @@ export class Button extends THREE.Mesh {
         this.addEventListener('select', options.onSelect);
 
         this.addEventListener('pointerenter', (e) => {
+
+            (<Pointer>e.dispatcher).pulse()
+
             gsap.to(this.shape, {
                 height: Button.height + 0.5,
                 width: Button.width + 0.5,
@@ -102,7 +106,7 @@ export class Button extends THREE.Mesh {
         });
     }
 
-    setIcon(iconPath: string) {
+    setIcon(iconPath: string): void {
         loaderSVG.load(iconPath, (data) => {
             const shapes = SVGLoader.createShapes(data.paths[0]);
             const iconGeo = new THREE.ShapeGeometry(shapes[0]).scale(0.1, -0.1, 0).center();
