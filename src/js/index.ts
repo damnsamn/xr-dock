@@ -8,9 +8,10 @@ import { headTracking, LAYERS, setHeadTracking, sizes } from './config';
 import { AmbientLight } from 'three';
 import gsap from 'gsap';
 import { Button } from './classes/Button';
+import { MenuPanel } from './classes/MenuPanel';
 
 const dock = new Dock();
-dock.addButtons(
+dock.addButton(
     new Button({
         name: 'test1',
         color: 0xf5f5f5,
@@ -20,27 +21,37 @@ dock.addButtons(
             e.target.setIcon(headTracking ? '/icons/locked.svg' : '/icons/unlocked.svg');
         }
     }),
-    new Button({
-        name: 'triangle',
-        color: 0x75ff5f,
-        iconPath: "/icons/triangle.svg",
-    }),
-    new Button({
-        name: 'circle',
-        color: 0xff5f5f,
-        iconPath: "/icons/circle.svg",
-    }),
-    new Button({
-        name: 'cross',
-        color: 0x5f82ff,
-        iconPath: "/icons/cross.svg",
-    }),
-    new Button({
-        name: 'square',
-        color: 0xFF9549,
-        iconPath: "/icons/square.svg",
-    })
 );
+dock
+    .addMenu(
+        new Button({
+            name: 'triangle',
+            color: 0x75ff5f,
+            iconPath: "/icons/triangle.svg",
+        }),
+        new MenuPanel())
+    .addMenu(
+        new Button({
+            name: 'circle',
+            color: 0xff5f5f,
+            iconPath: "/icons/circle.svg",
+        }),
+        new MenuPanel())
+    .addMenu(
+        new Button({
+            name: 'cross',
+            color: 0x5f82ff,
+            iconPath: "/icons/cross.svg",
+        }),
+        new MenuPanel())
+    .addMenu(
+        new Button({
+            name: 'square',
+            color: 0xFF9549,
+            iconPath: "/icons/square.svg",
+        }),
+        new MenuPanel())
+
 headSpace.add(dock);
 
 const uiLight = new THREE.DirectionalLight(0xffffff, 0.5);
@@ -128,16 +139,6 @@ function render() {
     renderer.render(scene, camera);
     // renderer.clearDepth();
     renderer.render(uiScene, camera);
-
-    // scene.background = new THREE.Color(0x0f0f0f);
-    // let w = sizes.width / 4;
-    // let h = sizes.height / 4;
-    // renderer.setViewport(sizes.width - w, 0, w, h);
-    // renderer.setScissor(sizes.width - w, 0, w, h);
-    // renderer.setScissorTest(true);
-    // // uiLight.shadow.camera.aspect = w / h;
-    // // uiLight.shadow.camera.updateProjectionMatrix();
-    // renderer.render(scene, uiLight.shadow.camera);
 }
 
 window.requestAnimationFrame(render);
@@ -145,4 +146,3 @@ window.requestAnimationFrame(render);
 renderer.setAnimationLoop(function () {
     render();
 });
-// };

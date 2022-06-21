@@ -61,7 +61,14 @@ export class Button extends THREE.Mesh {
             this.setIcon(options.iconPath);
         }
 
-        this.addEventListener('select', options.onSelect);
+
+        options.onSelect && this.addEventListener('select', options.onSelect);
+        options.onPointerEnter && this.addEventListener('pointerenter', options.onPointerEnter);
+        options.onPointerLeave && this.addEventListener('pointerleave', options.onPointerLeave);
+
+        this.addEventListener('select', (e) => {
+            (<Pointer>e.dispatcher).pulse()
+        });
 
         this.addEventListener('pointerenter', (e) => {
 
@@ -85,6 +92,7 @@ export class Button extends THREE.Mesh {
                 duration: 0.1,
             });
         });
+
         this.addEventListener('pointerleave', (e) => {
             gsap.to(this.shape, {
                 height: Button.height,

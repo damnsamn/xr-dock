@@ -33,7 +33,7 @@ export class Pointer {
         this.gripSpace = renderer.xr.getControllerGrip(index);
         this.hoverIntersectionsBuffer = [];
 
-        this.raySpace.addEventListener("connected",(e)=>{
+        this.raySpace.addEventListener("connected", (e) => {
             this.inputSource = e.data;
         })
 
@@ -79,7 +79,7 @@ export class Pointer {
         const intersections = this.getRayIntersections();
 
         intersections.forEach((intersect) => {
-            intersect.object.dispatchEvent({ type: 'select', target: intersect.object });
+            intersect.object.dispatchEvent({ type: 'select', target: intersect.object, dispatcher: this });
         });
     }
 
@@ -114,8 +114,11 @@ export class Pointer {
     }
 
     pulse(): void {
-        const haptic = this.inputSource.gamepad.hapticActuators[0];
-        // @ts-ignore
-        haptic.pulse(0.5, 5)
+        const haptic = this.inputSource.gamepad.hapticActuators?.[0];
+
+        if (haptic) {
+            // @ts-ignore
+            haptic.pulse(0.5, 5)
+        }
     }
 }

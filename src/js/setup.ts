@@ -23,6 +23,7 @@ const controls = new OrbitControls(camera, canvas);
 export const scene = new THREE.Scene();
 export const uiScene = new THREE.Scene();
 export const headSpace = new THREE.Group();
+headSpace.scale.set(0.01,0.01,0.01);
 
 
 export const renderer = new THREE.WebGLRenderer({

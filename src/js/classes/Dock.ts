@@ -1,18 +1,23 @@
 import * as THREE from 'three';
 import { LAYERS } from '../config';
+import { headSpace } from '../setup';
 import { Squircle } from '../shapes/Squircle';
 import { Button } from './Button';
+import { MenuPanel } from './MenuPanel';
 
+type Menu = {
+    button: Button;
+    menuPanel: MenuPanel;
+}
 export class Dock extends THREE.Group {
     shape: Squircle;
     mesh: THREE.Mesh;
     buttons?: Button[];
+    menus?: Menu[];
 
-    // In worldscale - 1 == 1m
-    static offsetZ = -1.0;
-    static offsetY = -0.4;
-
-    // In localscale - 1 == 1cm
+    // In headSpaceScale: 1 == 1cm
+    static offsetZ = -100;
+    static offsetY = -40;
     static depth = 0.25;
     static padding = 1.2;
     static borderRadius = Button.width / 2 + Dock.padding;
@@ -28,11 +33,11 @@ export class Dock extends THREE.Group {
         this.mesh = new THREE.Mesh(geo, mat);
         this.shape = shape;
         this.buttons = [];
+        this.menus = [];
         this.add(this.mesh);
         this.layers.set(LAYERS.UI)
 
         this.position.set(0, Dock.offsetY, Dock.offsetZ);
-        this.scale.set(0.01, 0.01, 0.01);
         this.rotation.x = Dock.rotX;
         this.mesh.receiveShadow = true;
 
@@ -79,6 +84,18 @@ export class Dock extends THREE.Group {
         // Recalculate dock
         this.calcDimensions();
         this.calcButtonPositions();
+        return this;
+    }
+
+    addMenu(button: Button, menuPanel: MenuPanel) {
+        this.menus.splice(this.menus.length, 0, <Menu>{ button, menuPanel });
+        headSpace.add(menuPanel)
+        this.addButton(button)
+        button.addEventListener("select", () => {
+            this.menus.filter(menu => menu.menuPanel.uuid !== menuPanel.uuid).forEach(menu=>menu.menuPanel.setOpen(false))
+
+            menuPanel.setOpen(!menuPanel.open)
+        })
         return this;
     }
 }
