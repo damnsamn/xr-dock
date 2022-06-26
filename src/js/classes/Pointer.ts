@@ -57,7 +57,7 @@ export class Pointer {
                 this.laser.visible = true;
                 return;
             }
-            this.handleSelect(e);
+            this.dispatchInputEvent(e);
         });
 
         this.raySpace.addEventListener('selectstart', (e: THREE.Event) => {
@@ -65,6 +65,7 @@ export class Pointer {
                 return;
             }
             (<THREE.LineBasicMaterial>this.laser.material).color = new THREE.Color(0xff0000);
+            this.dispatchInputEvent(e);
         });
 
         this.raySpace.addEventListener('selectend', (e: THREE.Event) => {
@@ -72,14 +73,15 @@ export class Pointer {
                 return;
             }
             (<THREE.LineBasicMaterial>this.laser.material).color = new THREE.Color(0x00ff00);
+            this.dispatchInputEvent(e);
         });
     }
 
-    handleSelect(e: THREE.Event) {
+    dispatchInputEvent(e: THREE.Event) {
         const intersections = this.getRayIntersections();
 
         intersections.forEach((intersect) => {
-            intersect.object.dispatchEvent({ type: 'select', target: intersect.object, dispatcher: this });
+            intersect.object.dispatchEvent({ type: e.type, target: intersect.object, dispatcher: this });
         });
     }
 

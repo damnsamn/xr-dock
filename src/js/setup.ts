@@ -68,6 +68,7 @@ export function setup() {
 
 export function xrSetup() {
     xrSession = renderer.xr.getSession();
+    renderer.xr.setFoveation(0)
 
     setupPointers();
 

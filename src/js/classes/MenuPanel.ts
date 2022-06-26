@@ -12,8 +12,8 @@ export class MenuPanel extends THREE.Mesh {
     timeline: GSAPTimeline;
 
     // In headSpaceScale: 1 == 1cm
-    static offsetZ = -105;
-    static offsetY = -32.5;
+    static offsetZ = -5;
+    static offsetY = 7.5;
     static borderRadius = 2;
     static depth = 0.25
 

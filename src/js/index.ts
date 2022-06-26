@@ -1,6 +1,5 @@
 import '../style.css';
 import * as THREE from 'three';
-import { LineBasicMaterial } from 'three';
 import { Pointer } from './classes/Pointer';
 import { Dock } from './classes/Dock';
 import { canvas, manager, scene, uiScene, camera, worldCamera, setup, renderer, xrSetup, headSpace, pointers } from './setup';
@@ -16,7 +15,7 @@ dock.addButton(
         name: 'test1',
         color: 0xf5f5f5,
         iconPath: headTracking ? '/icons/locked.svg' : '/icons/unlocked.svg',
-        onSelect: (e) => {
+        onSelectStart: (e) => {
             setHeadTracking(!headTracking);
             e.target.setIcon(headTracking ? '/icons/locked.svg' : '/icons/unlocked.svg');
         }
@@ -81,10 +80,14 @@ const meterMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
 const meterPlane = new THREE.Mesh(meterGeometry, meterMaterial);
 meterPlane.receiveShadow = true;
 meterPlane.rotateX(-Math.PI / 2);
-scene.add(meterPlane);
+const gridHelper = new THREE.GridHelper(10,20, 0xffffff,0x555555);
+scene.add(meterPlane, gridHelper);
 
 const axesHelper = new THREE.AxesHelper();
 scene.add(axesHelper);
+
+gridHelper.position.y = -0.002;
+axesHelper.position.y = 0.001;
 
 const light = new AmbientLight(new THREE.Color(0xffffff), 1);
 scene.add(light);
@@ -102,9 +105,8 @@ window.addEventListener('resize', () => {
 });
 
 function updateHeadSpace() {
-    headSpace.position.copy(camera.position);
-    const deltaAngle = headSpace.quaternion.angleTo(camera.quaternion);
-    headSpace.quaternion.rotateTowards(camera.quaternion, deltaAngle / 10);
+    headSpace.position.lerp(camera.position, 0.1);
+    headSpace.quaternion.slerp(camera.quaternion, 0.1);
 }
 
 function updatePointers() {
