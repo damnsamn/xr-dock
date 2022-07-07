@@ -3,8 +3,13 @@ export const sizes = {
     height: window.innerHeight,
 };
 
-export let headTracking = true;
-export const setHeadTracking = (bool: boolean) => (headTracking = bool);
+export const config = {
+    headTracking: true,
+    comeHither: true,
+    "what's this?": false,
+}
+
+export const setHeadTracking = (bool: boolean) => (config.headTracking = bool);
 
 export const enum LAYERS {
     GLOBAL,

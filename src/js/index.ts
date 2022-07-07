@@ -2,9 +2,8 @@ import '../style.css';
 import * as THREE from 'three';
 import { Pointer } from './classes/Pointer';
 import { Dock } from './classes/Dock';
-import { canvas, manager, scene, uiScene, camera, worldCamera, setup, renderer, xrSetup, headSpace, pointers } from './setup';
-import { headTracking, LAYERS, setHeadTracking, sizes } from './config';
-import { AmbientLight } from 'three';
+import { canvas, manager, scene, uiScene, camera, worldCamera, setup, renderer, xrSetup, headSpace, pointers, gui } from './setup';
+import { config, LAYERS, setHeadTracking, sizes } from './config';
 import gsap from 'gsap';
 import { Button } from './classes/Button';
 import { MenuPanel } from './classes/MenuPanel';
@@ -14,10 +13,10 @@ dock.addButton(
     new Button({
         name: 'test1',
         color: 0xf5f5f5,
-        iconPath: headTracking ? '/icons/locked.svg' : '/icons/unlocked.svg',
+        iconPath: config.headTracking ? '/icons/locked.svg' : '/icons/unlocked.svg',
         onSelectStart: (e) => {
-            setHeadTracking(!headTracking);
-            e.target.setIcon(headTracking ? '/icons/locked.svg' : '/icons/unlocked.svg');
+            setHeadTracking(!config.headTracking);
+            e.target.setIcon(config.headTracking ? '/icons/locked.svg' : '/icons/unlocked.svg');
         }
     }),
 );
@@ -75,12 +74,12 @@ headSpace.add(uiLight);
 
 headSpace.position.set(0, 0.6, 1);
 
-const meterGeometry = new THREE.PlaneBufferGeometry(1, 1);
+const meterGeometry = new THREE.PlaneGeometry(1, 1);
 const meterMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
 const meterPlane = new THREE.Mesh(meterGeometry, meterMaterial);
 meterPlane.receiveShadow = true;
 meterPlane.rotateX(-Math.PI / 2);
-const gridHelper = new THREE.GridHelper(10,20, 0xffffff,0x555555);
+const gridHelper = new THREE.GridHelper(10, 20, 0xffffff, 0x555555);
 scene.add(meterPlane, gridHelper);
 
 const axesHelper = new THREE.AxesHelper();
@@ -89,11 +88,12 @@ scene.add(axesHelper);
 gridHelper.position.y = -0.002;
 axesHelper.position.y = 0.001;
 
-const light = new AmbientLight(new THREE.Color(0xffffff), 1);
+const light = new THREE.AmbientLight(new THREE.Color(0xffffff), 1);
 scene.add(light);
-const uiAmbientLight = new AmbientLight(new THREE.Color(0xffffff), 1);
+const uiAmbientLight = new THREE.AmbientLight(new THREE.Color(0xffffff), 1);
 uiScene.add(uiAmbientLight);
 // uiScene.add(light)
+
 
 window.addEventListener('resize', () => {
     sizes.width = window.innerWidth;
@@ -119,7 +119,7 @@ setup();
 function render() {
     gsap.ticker.tick();
 
-    if (headTracking)
+    if (config.headTracking)
         updateHeadSpace();
 
     updatePointers();

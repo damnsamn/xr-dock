@@ -2,7 +2,7 @@ import GUI from 'lil-gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 import * as THREE from 'three';
-import { setHeadTracking, sizes } from './config';
+import { config, setHeadTracking, sizes } from './config';
 import { WebXRController } from 'three';
 import { Pointer } from './classes/Pointer';
 
@@ -40,6 +40,7 @@ function setupPointers() {
 }
 
 export function setup() {
+    gui.add(config, "comeHither")
     uiScene.add(headSpace)
     controls.update();
 

@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import * as THREE from 'three';
-import { LAYERS, setHeadTracking } from '../config';
+import { config, LAYERS, setHeadTracking } from '../config';
 import { headSpace } from '../setup';
 import { Squircle } from '../shapes/Squircle';
 import { Button } from './Button';
@@ -107,26 +107,30 @@ export class Dock extends THREE.Group {
             button.setActive(!button.isActive);
             menuPanel.setOpen(!menuPanel.open)
             if (menuPanel.open) {
-                gsap.to(this.position, {
-                    z: -50,
-                    duration: 0.5,
-                    ease: "power2.inOut"
-                })
-                gsap.to(this.dockSpace.position, {
-                    z: MenuPanel.offsetZ,
-                    duration: 0.2
-                })
+                if (config.comeHither) {
+                    gsap.to(this.position, {
+                        z: -50,
+                        duration: 0.5,
+                        ease: "power2.inOut"
+                    })
+                    gsap.to(this.dockSpace.position, {
+                        z: MenuPanel.offsetZ,
+                        duration: 0.2
+                    })
+                }
                 setHeadTracking(false);
             } else {
-                gsap.to(this.position, {
-                    z: Dock.offsetZ,
-                    duration: 0.2,
-                    ease: "power2.out"
-                })
-                gsap.to(this.dockSpace.position, {
-                    z: 0,
-                    duration: 0.2
-                })
+                if (config.comeHither) {
+                    gsap.to(this.position, {
+                        z: Dock.offsetZ,
+                        duration: 0.2,
+                        ease: "power2.out"
+                    })
+                    gsap.to(this.dockSpace.position, {
+                        z: 0,
+                        duration: 0.2
+                    })
+                }
                 setHeadTracking(true);
             }
         })
