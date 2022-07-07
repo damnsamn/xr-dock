@@ -21,15 +21,40 @@ const controls = new OrbitControls(camera, canvas);
 
 // Scene
 export const scene = new THREE.Scene();
-export const uiScene = new THREE.Scene();
 export const headSpace = new THREE.Group();
-headSpace.scale.set(0.01,0.01,0.01);
+headSpace.scale.set(0.01, 0.01, 0.01);
 
 
 export const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     antialias: true,
 });
+
+export const pointableObjects: THREE.Object3D[] = [];
+export function makePointable(object: THREE.Object3D) {
+    pointableObjects.push(object)
+}
+
+export const grippableObjects: THREE.Object3D[] = [];
+export function makeGrippable(object: THREE.Mesh) {
+    //@ts-ignore
+    object.material.setValues({ side: THREE.DoubleSide });
+    grippableObjects.push(object)
+}
+
+type FnObject = {
+    fn:Function,
+    args: any[]
+}
+export const updateFunctions: FnObject[] = [];
+export function registerUpdateFunction(fn: Function, ...args: any) {
+    updateFunctions.push({fn, args});
+}
+export function unregisterUpdateFunction(fn: Function) {
+    const i = updateFunctions.findIndex(it => it.fn === fn);
+    if (i !== -1)
+        updateFunctions.splice(i, 1);
+}
 
 export let xrSession: XRSession;
 export let pointers: Pointer[] = [];
@@ -41,7 +66,11 @@ function setupPointers() {
 
 export function setup() {
     gui.add(config, "comeHither")
-    uiScene.add(headSpace)
+    gui.add(config, "showGripRays")
+
+    scene.add(headSpace)
+    scene.background = new THREE.Color(0x0a0a0a);
+
     controls.update();
 
     setHeadTracking(false);
@@ -69,7 +98,7 @@ export function setup() {
 
 export function xrSetup() {
     xrSession = renderer.xr.getSession();
-    renderer.xr.setFoveation(0)
+    // renderer.xr.setFoveation(0)
 
     setupPointers();
 

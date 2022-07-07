@@ -2,11 +2,33 @@ import '../style.css';
 import * as THREE from 'three';
 import { Pointer } from './classes/Pointer';
 import { Dock } from './classes/Dock';
-import { canvas, manager, scene, uiScene, camera, worldCamera, setup, renderer, xrSetup, headSpace, pointers, gui } from './setup';
+import { canvas, manager, scene, camera, worldCamera, setup, renderer, xrSetup, headSpace, pointers, gui, updateFunctions } from './setup';
 import { config, LAYERS, setHeadTracking, sizes } from './config';
 import gsap from 'gsap';
 import { Button } from './classes/Button';
 import { MenuPanel } from './classes/MenuPanel';
+import { HandCrank } from './classes/Controls/HandCrank';
+
+
+
+
+// Add Lee
+const leeTex = new THREE.TextureLoader(manager).load("lee.png")
+const leeMat = new THREE.MeshBasicMaterial({
+    map: leeTex,
+    transparent: true
+});
+const leeGeo = new THREE.PlaneGeometry(0.995, 1.778);
+const leeMesh = new THREE.Mesh(leeGeo, leeMat);
+leeMesh.position.y = 1.778 / 2;
+leeMesh.position.z = -200;
+leeMesh.visible = false;
+scene.add(leeMesh);
+gui.add(leeMesh, "visible").name("What's this?")
+
+
+
+
 
 const dock = new Dock();
 dock.addButton(
@@ -27,28 +49,34 @@ dock
             color: 0x75ff5f,
             iconPath: "/icons/triangle.svg",
         }),
-        new MenuPanel())
+        new MenuPanel()
+    )
     .addMenu(
         new Button({
             name: 'circle',
             color: 0xff5f5f,
             iconPath: "/icons/circle.svg",
         }),
-        new MenuPanel())
+        new MenuPanel()
+    )
     .addMenu(
         new Button({
             name: 'cross',
             color: 0x5f82ff,
             iconPath: "/icons/cross.svg",
         }),
-        new MenuPanel())
+        new MenuPanel(
+            new HandCrank(leeMesh.position, "z"),
+        )
+    )
     .addMenu(
         new Button({
             name: 'square',
             color: 0xFF9549,
             iconPath: "/icons/square.svg",
         }),
-        new MenuPanel())
+        new MenuPanel()
+    )
 
 headSpace.add(dock);
 
@@ -68,9 +96,7 @@ uiLight.position.copy(camera.position);
 uiLight.position.z -= 0.5;
 uiLight.target = dock;
 
-const uiLightHelper = new THREE.CameraHelper(uiLight.shadow.camera);
 headSpace.add(uiLight);
-// scene.add(uiLightHelper);
 
 headSpace.position.set(0, 0.6, 1);
 
@@ -90,24 +116,6 @@ axesHelper.position.y = 0.001;
 
 const light = new THREE.AmbientLight(new THREE.Color(0xffffff), 1);
 scene.add(light);
-const uiAmbientLight = new THREE.AmbientLight(new THREE.Color(0xffffff), 1);
-uiScene.add(uiAmbientLight);
-// uiScene.add(light)
-
-// Add Lee
-const leeTex = new THREE.TextureLoader(manager).load("lee.png")
-const leeMat = new THREE.MeshBasicMaterial({
-    map: leeTex,
-    transparent: true
-});
-const leeGeo = new THREE.PlaneGeometry(0.995, 1.778);
-const leeMesh = new THREE.Mesh(leeGeo, leeMat);
-leeMesh.position.y = 1.778 / 2;
-leeMesh.position.z = -200;
-leeMesh.visible = false;
-scene.add(leeMesh);
-gui.add(leeMesh,"visible").name("What's this?")
-gui.add(leeMesh.position,"z", -200, -1)
 
 
 window.addEventListener('resize', () => {
@@ -124,9 +132,6 @@ function updateHeadSpace() {
     headSpace.quaternion.slerp(camera.quaternion, 0.1);
 }
 
-function updatePointers() {
-    pointers.forEach((p: Pointer) => p.update())
-}
 
 
 setup();
@@ -137,28 +142,19 @@ function render() {
     if (config.headTracking)
         updateHeadSpace();
 
-    updatePointers();
+
+
+    for (let i = 0; i < updateFunctions.length; i++) updateFunctions[i].fn(...updateFunctions[i].args);
 
 
     if (renderer.xr.isPresenting) {
-        renderer.clear()
         renderer.render(scene, camera);
-        // renderer.clearDepth();
-        renderer.render(uiScene, camera);
         return;
     }
-    scene.background = new THREE.Color(0x0a0a0a);
-    renderer.setViewport(0, 0, sizes.width, sizes.height);
-    renderer.setScissor(0, 0, sizes.width, sizes.height);
-    renderer.setScissorTest(true);
-    camera.updateProjectionMatrix();
-    renderer.clear()
     renderer.render(scene, camera);
-    // renderer.clearDepth();
-    renderer.render(uiScene, camera);
 }
 
-window.requestAnimationFrame(render);
+// window.requestAnimationFrame(render);
 
 renderer.setAnimationLoop(function () {
     render();

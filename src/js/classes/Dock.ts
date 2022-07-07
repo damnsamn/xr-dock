@@ -85,7 +85,7 @@ export class Dock extends THREE.Group {
 
     addButtons(...buttons: Button[]) {
         this.buttons.splice(this.buttons.length, 0, ...buttons)
-        this.add(...buttons);
+        this.dockSpace.add(...buttons);
 
         // Recalculate dock
         this.calcDimensions();

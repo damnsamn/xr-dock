@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { Squircle } from "../shapes/Squircle";
 import { LAYERS } from "../config";
 import { Pointer } from "./Pointer";
+import { makePointable } from "../setup";
 
 const loaderSVG = new SVGLoader();
 
@@ -30,7 +31,7 @@ export class Button extends THREE.Mesh {
     static offset = 1;
     static iconOffset = 1;
     static hoverOffset = 1.75;
-    static shape = ()=>new Squircle(Button.width, Button.height, Button.borderRadius, 0.8);
+    static shape = () => new Squircle(Button.width, Button.height, Button.borderRadius, 0.8);
 
     static defaultOptions: ButtonDefaultOptions = {
         name: "Button",
@@ -59,13 +60,13 @@ export class Button extends THREE.Mesh {
         this.isActive = false;
 
         this.position.z = Button.offset + Button.depth / 2;
-        this.layers.enable(LAYERS.RAYCASTABLE);
         this.castShadow = true;
 
         if (options.iconPath) {
             this.setIcon(options.iconPath);
         }
 
+        makePointable(this);
 
         options.onSelect && this.addEventListener('select', options.onSelect);
         options.onSelectStart && this.addEventListener('selectstart', options.onSelectStart);
@@ -88,7 +89,7 @@ export class Button extends THREE.Mesh {
         });
     }
 
-    setActive(bool:boolean) {
+    setActive(bool: boolean) {
         this.isActive = bool;
         bool ? this.animateActive() : this.animateInactive();
     }

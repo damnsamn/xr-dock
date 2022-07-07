@@ -1,9 +1,4 @@
 import * as THREE from 'three';
-//@ts-ignore
-import { Text } from 'troika-three-text';
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry"
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
-import { manager } from '../setup';
 import { Squircle } from '../shapes/Squircle';
 import gsap from 'gsap';
 
@@ -39,7 +34,7 @@ export class MenuPanel extends THREE.Mesh {
         }
     }
 
-    constructor() {
+    constructor(...children: THREE.Object3D[]) {
         const shape = new Squircle(MenuPanel.width, MenuPanel.height, MenuPanel.borderRadius, 0.8);
         const geo = new THREE.ShapeGeometry(shape).translate(-MenuPanel.width / 2, 0, 0);
         const mat = new THREE.MeshStandardMaterial({ color: 0x111111 });
@@ -53,9 +48,8 @@ export class MenuPanel extends THREE.Mesh {
         this.scale.y = MenuPanel.closedState.scale.y;
         this.position.y = MenuPanel.closedState.position.y;
 
-        // // Update the rendering:
-        // const axesHelper = new THREE.AxesHelper();
-        // this.add(axesHelper);
+        if (children.length)
+            this.add(...children)
     }
 
     setOpen(bool: boolean) {
