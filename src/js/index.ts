@@ -94,6 +94,21 @@ const uiAmbientLight = new THREE.AmbientLight(new THREE.Color(0xffffff), 1);
 uiScene.add(uiAmbientLight);
 // uiScene.add(light)
 
+// Add Lee
+const leeTex = new THREE.TextureLoader(manager).load("lee.png")
+const leeMat = new THREE.MeshBasicMaterial({
+    map: leeTex,
+    transparent: true
+});
+const leeGeo = new THREE.PlaneGeometry(0.995, 1.778);
+const leeMesh = new THREE.Mesh(leeGeo, leeMat);
+leeMesh.position.y = 1.778 / 2;
+leeMesh.position.z = -200;
+leeMesh.visible = false;
+scene.add(leeMesh);
+gui.add(leeMesh,"visible").name("What's this?")
+gui.add(leeMesh.position,"z", -200, -1)
+
 
 window.addEventListener('resize', () => {
     sizes.width = window.innerWidth;
